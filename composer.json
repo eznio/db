@@ -1,0 +1,23 @@
+{
+  "name": "eznio/sqlite-collections",
+  "description": "SQLite Collections library inspired by Laravel",
+  "license": "MIT",
+  "keywords": ["sqlite", "collections"],
+  "homepage": "https://github.com/eznio/sqlite-collections",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.1.*",
+    "php-mock/php-mock-phpunit": "^0.3.0",
+    "php-mock/php-mock": "^0.8.0",
+    "mockery/mockery": "0.9.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "eznio\\db\\": "src",
+      "tests\\eznio\\db\\": "tests"
+    }
+  }
+}
