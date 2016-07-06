@@ -4,6 +4,7 @@ namespace eznio\db;
 
 use eznio\db\helpers\NameTranslateHelper;
 use eznio\db\drivers\Driver;
+use eznio\db\helpers\TableFormattingHelper;
 use eznio\db\interfaces\Collectible;
 
 /**
@@ -39,6 +40,7 @@ class Entity implements Collectible
     /**
      * Loads entity data from DB (by ID) or from array
      * @param $data int|array
+     * @return Entity
      */
     public function load($data)
     {
@@ -46,7 +48,7 @@ class Entity implements Collectible
             $this->data = $data;
         } else {
             if (null === $this->tableName) {
-                return;
+                return $this;
             }
             $this->data = $this->driver->load($this->tableName, $data);
         }
@@ -54,15 +56,18 @@ class Entity implements Collectible
             $this->id = Util::arrayGet($this->data, 'id');
             unset($this->data['id']);
         }
+
+        return $this;
     }
 
     /**
      * Saves entity to DB (either by inserting new row or updating existing one)
+     * @return Entity
      */
     public function save()
     {
         if (null === $this->tableName) {
-            return;
+            return $this;
         }
 
         if (null === $this->id) {
@@ -77,6 +82,8 @@ class Entity implements Collectible
                 $this->data
             );
         }
+
+        return $this;
     }
 
     /**
@@ -113,7 +120,7 @@ class Entity implements Collectible
      * Get/setter methods magic
      * @param $function
      * @param $parameters
-     * @return mixed
+     * @return Entity
      */
     public function __call($function, $parameters)
     {
@@ -125,7 +132,7 @@ class Entity implements Collectible
             $this->__set($fieldName, current($parameters));
             return $this;
         }
-        return null;
+        return $this;
     }
 
     /**
@@ -157,5 +164,24 @@ class Entity implements Collectible
             $data = array_merge(['id' => $this->getId()], $data);
         }
         return $data;
+    }
+
+    /**
+     * Formats internal data as simple two-rows (data + headers) table
+     * @return string
+     */
+    public function toTable()
+    {
+        $data = $this->toArray();
+        return TableFormattingHelper::format([array_values($data)], array_keys($data));
+    }
+
+    /**
+     * Declaring magic method for convenience
+     * @return string
+     */
+    public function toString()
+    {
+        return $this->toTable();
     }
 }

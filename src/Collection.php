@@ -18,19 +18,25 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     /**
      * Adds entity to collection
      * @param Collectible $entity
+     * @return Collection
      */
     public function add(Collectible $entity)
     {
         $this->items[] = $entity;
+
+        return $this;
     }
 
     /**
      * Removes entity from collection
      * @param $key string
+     * @return Collection
      */
     public function delete($key)
     {
         unset($this->items[$key]);
+
+        return $this;
     }
 
     /**
@@ -56,22 +62,34 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         return $result;
     }
 
+    /**
+     * Returns JSON-encoded internal storage
+     * @return string
+     */
     public function toJson()
     {
-
+        return json_encode($this->toArray());
     }
 
     /**
-     * @param array $headers list of column headers
+     * Returns ASCII table wih all colection data.
+     * Headers are taken from array keys.
      * @return string ASCII-table view
      */
-    public function toTable($headers = [])
+    public function toTable()
     {
-        return TableFormattingHelper::format($this->toArray(), $headers);
+        $data = $this->toArray();
+        $firstRow = current($data);
+        if (false !== $firstRow && count($firstRow) > 0) {
+            $headers = array_combine(array_keys($firstRow), array_keys($firstRow));
+            return TableFormattingHelper::format($data, $headers);
+        }
+        return TableFormattingHelper::format($data);
     }
 
     /**
      * Saves all entities in collection
+     * @return Collection
      */
     public function save()
     {
@@ -79,6 +97,8 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         foreach ($this->items as $entity) {
             $entity->save();
         }
+
+        return $this;
     }
 
     // Iterator interface

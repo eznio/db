@@ -32,7 +32,7 @@ class TableFormattingHelper
         $response[] = self::getSeparatorRow($maxLengths);
 
 
-        return implode("\n", $response);
+        return implode("\n", $response) . "\n";
     }
 
     /**
@@ -58,15 +58,18 @@ class TableFormattingHelper
             }
         }
 
-        if (count($headers) > 0) {
-            if (count($headers) === count(array_keys(current($data)))) {
-                $headers = array_combine(array_keys(current($data)), $headers);
-            }
+        if (0 === count($headers)) {
+            return $maxLengths;
+        }
 
-            foreach ($headers as $columnId => $item) {
-                if (strlen($item) > Util::arrayGet($maxLengths, $columnId)) {
-                    $maxLengths[$columnId] = strlen($item);
-                }
+        if (count($headers) !== count(array_keys(current($data)))) {
+            return $maxLengths;
+        }
+
+        $headers = array_combine(array_keys(current($data)), $headers);
+        foreach ($headers as $columnId => $item) {
+            if (strlen($item) > Util::arrayGet($maxLengths, $columnId)) {
+                $maxLengths[$columnId] = strlen($item);
             }
         }
 
@@ -74,17 +77,18 @@ class TableFormattingHelper
     }
 
     /**
-     * Generates row for table top, bottom and headers/data separation
+     * Generates row for table top, bottom and headers/data separator
      * @param array $maxLengths max column text lengths
      * @return string
      */
     private static function getSeparatorRow($maxLengths)
     {
-        $response = '+';
+        $response[] = '';
         foreach ($maxLengths as $length) {
-            $response .= str_pad('', $length + 2, '-') . '+';
+            $response[]= str_pad('', $length + 2, '-');
         }
-        return $response;
+        $response[] = '';
+        return implode('+', $response);
     }
 
     /**

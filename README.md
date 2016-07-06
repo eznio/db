@@ -1,2 +1,2 @@
-# sqlite-collections
-SQLite Collections library inspired by Laravel
+# ezn.io\db
+DB Entity Collections library inspired by Laravel

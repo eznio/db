@@ -1,8 +1,8 @@
 <?php
 
-namespace tests\eznio\sqlitecollections;
+namespace tests\eznio\db;
 
-use eznio\sqlitecollections\Util;
+use eznio\db\Util;
 
 class UtilTest extends \PHPUnit_Framework_TestCase
 {

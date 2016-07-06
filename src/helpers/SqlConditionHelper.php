@@ -35,9 +35,19 @@ class SqlConditionHelper
      */
     public static function build($conditions)
     {
+        if (!is_array($conditions)) {
+            throw new \LogicException(sprintf('SqlConditionHelper expects array as input, got %s', gettype($conditions)));
+        }
+        if (0 === count($conditions)) {
+            return '1 = 1';
+        }
         list($op, $condition) = each($conditions);
         if (in_array(strtolower($op), ['and', 'or'])) {
             return self::buildCompositeCondition($op, $condition);
+        } elseif (is_array($condition)) {
+            throw new \LogicException(
+                sprintf('SqlConditionHelper logic delimiter expected to be "or" or "and", got %s', $op)
+            );
         }
         return self::buildSimpleCondition($conditions);
     }

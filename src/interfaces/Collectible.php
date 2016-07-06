@@ -8,5 +8,5 @@ namespace eznio\db\interfaces;
  */
 interface Collectible
 {
-
+    public function toArray();
 }
