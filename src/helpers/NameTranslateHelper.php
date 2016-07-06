@@ -5,6 +5,8 @@ namespace eznio\db\helpers;
 /**
  * Class NameTranslateHelper
  * Translates snake case ("my_long_field_name") to cames case ("MyLongFieldName") and back
+ * Warning! Since this class is being used only for getter/setter generation, it supports
+ * 3-char prefix lengths only. You have been warned.
  * @package eznio\db\helpers
  */
 class NameTranslateHelper

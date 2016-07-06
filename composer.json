@@ -17,7 +17,7 @@
   "autoload": {
     "psr-4": {
       "eznio\\db\\": "src",
-      "tests\\eznio\\db\\": "tests"
+      "eznio\\db\\tests\\": "tests"
     }
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\eznio\helpers;
+namespace eznio\db\tests\helpers;
 
 
 use eznio\db\helpers\TableFormattingHelper;

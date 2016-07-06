@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\eznio\db\helpers;
+namespace eznio\db\tests\helpers;
 
 
 use eznio\db\helpers\SqlConditionHelper;

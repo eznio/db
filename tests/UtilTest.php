@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\eznio\db;
+namespace eznio\db\tests;
 
 use eznio\db\Util;
 
