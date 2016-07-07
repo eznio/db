@@ -3,60 +3,66 @@
 namespace eznio\db\drivers;
 
 /**
- * Class Sqlite
- * @package eznio\db\drivers
+ * Class Mysql
+ * @package eznio\db\drivers\
  */
-class Sqlite implements Driver
+class Mysql implements Driver
 {
-    /** @var \SQLite3 */
-    private $sqliteHandler;
+    /** @var string|null */
+    private $dsn = null;
+
+    /** @var string|null */
+    private $login = null;
+
+    /** @var string|null */
+    private $password = null;
+
+    /** @var \PDO|null */
+    private $dbHandler = null;
 
     /**
-     * @param string $path path to .sqlite3 data file
+     * Mysql constructor.
+     * @param string $dsn FQDSN
+     * @param string $login DB login
+     * @param string $password DB password
      */
-    public function __construct($path)
+    public function __construct($dsn, $login, $password)
     {
-        $this->sqliteHandler = new \SQLite3($path);
-        $this->sqliteHandler->enableExceptions(true);
+        $this->dsn = $dsn;
+        $this->login = $login;
+        $this->password = $password;
     }
 
     /**
-     * Runs SQL query and returns 2D resulting array
-     * @param string $sql query to run
-     * @param array $args query named arguments
+     * Processes SQL query and returns 2D resulting array
+     * @param string $sql
+     * @param array $args
      * @return array
      */
     public function select($sql, array $args = [])
     {
-        try {
-            $sqliteResult = $this->processRequest($sql, $args);
-            $result = [];
-            while ($row = $sqliteResult->fetchArray(SQLITE3_ASSOC)) {
-                if (array_key_exists('ARRAY_KEY', $row)) {
-                    $key = $row['ARRAY_KEY'];
-                    unset($row['ARRAY_KEY']);
-                    $result[$key] = $row;
-                } else {
-                    $result[] = $row;
-                }
+        $sqlResult = $this->processRequest($sql, $args);
+        $result = [];
+        while ($row = $sqlResult->fetch(\PDO::FETCH_ASSOC)) {
+            if (array_key_exists('ARRAY_KEY', $row)) {
+                $key = $row['ARRAY_KEY'];
+                unset($row['ARRAY_KEY']);
+                $result[$key] = $row;
+            } else {
+                $result[] = $row;
             }
-        } catch  (\Exception $e) {
-            $result = [];
         }
         return $result;
     }
 
     /**
-     * Runs SQL query and returns nothing
-     * @param string $sql query to run
-     * @param array $args query named arguments
+     * Processes SQL query and returns nothing
+     * @param string $sql
      * @param array $args
      */
     public function query($sql, array $args = [])
     {
-        try {
-            $this->processRequest($sql, $args);
-        } catch  (\Exception $e) {}
+        $this->processRequest($sql, $args);
     }
 
     /**
@@ -136,7 +142,7 @@ class Sqlite implements Driver
             "'" . implode('\',\'', array_values($data)) . "'"
         );
         $this->query($sql);
-        return $this->sqliteHandler->lastInsertRowID();
+        return $this->dbHandler->lastInsertId();
     }
 
     /**
@@ -179,17 +185,31 @@ class Sqlite implements Driver
     }
 
     /**
-     * Runs quesy - creates prepared statement, substitutes named placeholders and executes query
-     * @param string $sql query to run
-     * @param array $args query arguments
-     * @return \SQLite3Result
+     * Checks if DB connection has been established
+     * @return bool
      */
-    private function processRequest($sql, array $args = [])
+    public function isConnected()
     {
-        $statement = $this->sqliteHandler->prepare($sql);
-        foreach ($args as $argId => $arg) {
-            $statement->bindValue($argId, $arg);
+        return null !== $this->dbHandler;
+    }
+
+    /**
+     * Processes PDO DB request and returns resulting PDOStatement
+     * @param string $sql
+     * @param array $placeholders
+     * @return \PDOStatement
+     */
+    private function processRequest($sql, array $placeholders = [])
+    {
+        if (!$this->isConnected()) {
+            $this->dbHandler = new \PDO($this->dsn, $this->login, $this->password);
         }
-        return $statement->execute();
+
+        $statement = $this->dbHandler->prepare($sql);
+        foreach ($placeholders as $placeholderId => $placeholderValue) {
+            $statement->bindParam($placeholderId, $placeholderValue);
+        }
+        $statement->execute();
+        return $statement;
     }
 }
