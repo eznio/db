@@ -2,8 +2,10 @@
 
 namespace eznio\db;
 
+
 use eznio\db\interfaces\Collectible;
 use eznio\db\helpers\TableFormattingHelper;
+use eznio\ar\Ar;
 
 /**
  * Entity Collection abstraction
@@ -139,7 +141,7 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     public function offsetGet($offset)
     {
-        return Util::arrayGet($this->items, $offset);
+        return Ar::get($this->items, $offset);
     }
 
     public function offsetSet($offset, $value)

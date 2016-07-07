@@ -2,7 +2,8 @@
 
 namespace eznio\db\helpers;
 
-use eznio\db\Util;
+
+use eznio\ar\Ar;
 
 /**
  * Formats 2D associative array to ascii-graphics table
@@ -68,7 +69,7 @@ class TableFormattingHelper
 
         $headers = array_combine(array_keys(current($data)), $headers);
         foreach ($headers as $columnId => $item) {
-            if (strlen($item) > Util::arrayGet($maxLengths, $columnId)) {
+            if (strlen($item) > Ar::get($maxLengths, $columnId)) {
                 $maxLengths[$columnId] = strlen($item);
             }
         }

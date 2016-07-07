@@ -2,6 +2,8 @@
 
 namespace eznio\db;
 
+
+use eznio\ar\Ar;
 use eznio\db\drivers\Driver;
 
 /**
@@ -44,7 +46,7 @@ class EntityManager
      */
     public function getRepository($entityName)
     {
-        if (null === Util::arrayGet($this->repositories, $entityName)) {
+        if (null === Ar::get($this->repositories, $entityName)) {
             $repositoryClassName =
                 $this->repositoriesNamespace
                 . ucfirst($entityName)
@@ -56,7 +58,7 @@ class EntityManager
                 $this->repositories[$entityName] = new Repository($this->driver, $entityName);
             }
         }
-        return Util::arrayGet($this->repositories,$entityName);
+        return Ar::get($this->repositories,$entityName);
     }
 
     /**

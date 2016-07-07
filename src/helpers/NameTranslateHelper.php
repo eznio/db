@@ -2,6 +2,7 @@
 
 namespace eznio\db\helpers;
 
+
 /**
  * Class NameTranslateHelper
  * Translates snake case ("my_long_field_name") to cames case ("MyLongFieldName") and back

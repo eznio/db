@@ -2,6 +2,7 @@
 
 namespace eznio\db\drivers;
 
+
 /**
  * Class Sqlite
  * @package eznio\db\drivers

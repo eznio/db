@@ -2,6 +2,8 @@
 
 namespace eznio\db;
 
+
+use eznio\ar\Ar;
 use eznio\db\helpers\NameTranslateHelper;
 use eznio\db\drivers\Driver;
 use eznio\db\helpers\TableFormattingHelper;
@@ -53,7 +55,7 @@ class Entity implements Collectible
             $this->data = $this->driver->load($this->tableName, $data);
         }
         if (count($this->data) > 0) {
-            $this->id = Util::arrayGet($this->data, 'id');
+            $this->id = Ar::get($this->data, 'id');
             unset($this->data['id']);
         }
 
@@ -93,7 +95,7 @@ class Entity implements Collectible
      */
     public function __get($key)
     {
-        return Util::arrayGet($this->data, $key);
+        return Ar::get($this->data, $key);
     }
 
     /**

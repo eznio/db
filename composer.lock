@@ -4,9 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "40b093fb70ab2a1dfdcdbc20f3f029cc",
-    "content-hash": "d12d88a9aa3b956c27d25c6c9ec25fce",
-    "packages": [],
+    "hash": "83281810dc018fd43eac92eaa6257691",
+    "content-hash": "c0dc21d81731780389df21ac20a8026b",
+    "packages": [
+        {
+            "name": "eznio/ar",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/eznio/ar.git",
+                "reference": "45e8f6ea440f2228c125216288fc96b6e4e0ba5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/eznio/ar/zipball/45e8f6ea440f2228c125216288fc96b6e4e0ba5e",
+                "reference": "45e8f6ea440f2228c125216288fc96b6e4e0ba5e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "eznio\\ar\\": "src",
+                    "eznio\\ar\\tests\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Array shortcut utils",
+            "homepage": "https://github.com/eznio/ar",
+            "keywords": [
+                "array",
+                "map",
+                "reduce",
+                "util"
+            ],
+            "time": "2016-07-07 21:26:34"
+        }
+    ],
     "packages-dev": [
         {
             "name": "hamcrest/hamcrest-php",

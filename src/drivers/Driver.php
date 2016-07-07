@@ -2,6 +2,7 @@
 
 namespace eznio\db\drivers;
 
+
 interface Driver
 {
     public function select($sql, array $args = []);
