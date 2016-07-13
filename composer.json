@@ -1,8 +1,8 @@
 {
-  "name": "eznio/sqlite-collections",
-  "description": "SQLite Collections library inspired by Laravel",
+  "name": "eznio/db",
+  "description": "DB Collections library inspired by Laravel",
   "license": "MIT",
-  "keywords": ["sqlite", "collections"],
+  "keywords": ["mysql", "sqlite", "collections"],
   "homepage": "https://github.com/eznio/sqlite-collections",
   "minimum-stability": "dev",
   "require": {
@@ -20,5 +20,8 @@
       "eznio\\db\\": "src",
       "eznio\\db\\tests\\": "tests"
     }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
   }
 }
