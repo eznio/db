@@ -9,5 +9,6 @@ namespace eznio\db\interfaces;
  */
 interface Collectible
 {
+    public function getId();
     public function toArray();
 }

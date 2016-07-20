@@ -14,8 +14,19 @@ use eznio\ar\Ar;
  */
 class Collection implements \Iterator, \ArrayAccess, Collectible
 {
+    /** @var string */
+    private $id;
+
     /** @var array */
     private $items = [];
+
+    /**
+     * Collection constructor.
+     */
+    public function __construct()
+    {
+        $this->id = uniqid();
+    }
 
     /**
      * Adds entity to collection
@@ -30,14 +41,29 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
+     * Adds entity to top of collection
+     * @param Collectible $entity
+     * @return Collection
+     */
+    public function prepend(Collectible $entity)
+    {
+        $this->items = array_merge([$entity], $this->items);
+
+        return $this;
+    }
+
+    /**
      * Removes entity from collection
      * @param $key string
      * @return Collection
      */
     public function delete($key)
     {
-        if ($key instanceof Collectible && in_array($key, $this->items)) {
+        if ($key instanceof Collectible) {
             $key = array_search($key, $this->items);
+            if (null === $key) {
+                return $this;
+            }
         }
 
         unset($this->items[$key]);
@@ -52,6 +78,24 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     public function count()
     {
         return count($this->items);
+    }
+
+    /**
+     * Returns collection's internal ID
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns collection's internal storage
+     * @return array
+     */
+    public function getAll()
+    {
+        return $this->items;
     }
 
     /**
@@ -78,9 +122,9 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
-     * Returns ASCII table wih all colection data.
+     * Returns ASCII table wih all collection data.
      * Headers are taken from array keys.
-     * @return string ASCII-table view
+     * @return string
      */
     public function toTable()
     {
@@ -109,23 +153,42 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     /**
      * Checks if key/collectible entity/array of them exists in collection
+     * @param mixed $needle item(-s) to look for
      * @return bool
      */
-    public function contains($item)
+    public function contains($needle)
     {
-        if (is_array($item)) {
+        if (is_array($needle)) {
             $result = true;
-            foreach ($item as $subItem) {
+            foreach ($needle as $subItem) {
                 $result = $result && $this->contains($subItem);
             }
             return $result;
         }
 
-        if ($item instanceof Collectible) {
-            return in_array($item, $this->items);
+        if ($needle instanceof Collectible) {
+            return in_array($needle, $this->items);
         }
 
-        return array_key_exists($item, $this->items);
+        return array_key_exists($needle, $this->items);
+    }
+
+    /**
+     * Returns first colection item
+     * @return Collectible
+     */
+    public function first()
+    {
+        return array_slice($this->items, 0, 1)[0];
+    }
+
+    /**
+     * Returns last colection item
+     * @return Collectible
+     */
+    public function last()
+    {
+        return array_slice($this->items, -1, 1)[0];
     }
 
     // Iterator interface
@@ -142,14 +205,14 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     public function key()
     {
-        /** @var Entity $currentItem */
+        /** @var Collectible $currentItem */
         $currentItem = current($this->items);
         return $currentItem->getId();
     }
 
     public function valid()
     {
-        return current($this->items) !== false;
+        return false !== current($this->items);
     }
 
     public function rewind()

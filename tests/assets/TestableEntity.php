@@ -8,6 +8,11 @@ use eznio\ar\Ar;
 class TestableEntity implements Collectible
 {
     /**
+     * @var string
+     */
+    private $id;
+
+    /**
      * @var array
      */
     private $data;
@@ -19,6 +24,7 @@ class TestableEntity implements Collectible
     public function __construct(array $data = [])
     {
         $this->data = $data;
+        $this->id = uniqid();
     }
 
     /**
@@ -37,6 +43,14 @@ class TestableEntity implements Collectible
     public function __get($key)
     {
         return Ar::get($this->data, $key);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
