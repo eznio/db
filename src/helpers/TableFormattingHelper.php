@@ -15,11 +15,17 @@ class TableFormattingHelper
      * Returns string with generated table
      * @param array $data 2D array with table data
      * @param array $headers array with table column headers
+     * @param bool $tryToGuessHeaders if we shold take header names from array column keys
      * @return string
      */
-    public static function format(array $data, array $headers = [])
+    public static function format(array $data, array $headers = [], $tryToGuessHeaders = true)
     {
-        $maxLengths = self::getMaxLengths($data, $headers);
+        $columnNames = self::getColumnNames($data, $headers);
+        $maxLengths = self::getMaxLengths($data, $headers, $columnNames);
+
+        if (true === $tryToGuessHeaders && 0 === count($headers)) {
+            $headers = array_combine($columnNames, $columnNames);
+        }
 
         $response = [];
         if (count($headers) > 0) {
@@ -37,26 +43,51 @@ class TableFormattingHelper
     }
 
     /**
+     * Gathers list of column names
+     * @param array $data
+     * @param array $headers
+     * @return array
+     */
+    private static function getColumnNames($data, $headers)
+    {
+        $columns = array_keys($headers);
+        foreach ($data as $row) {
+            $columns = array_unique(array_merge($columns, array_keys($row)));
+        }
+        return $columns;
+    }
+
+    /**
      * Returns max string length per each column
      * @param array $data 2D array with table data
      * @param array $headers array with table column headers
+     * @param array columns column key names
      * @return array
      */
-    private static function getMaxLengths($data, $headers)
+    private static function getMaxLengths($data, $headers, $columns)
     {
         $maxLengths = [];
         foreach ($data as $rowId => $row) {
             if (!is_array($row)) {
                 continue;
             }
-            foreach ($row as $columnId => $item) {
-                $item = preg_replace('/\<[^\|]+\|([^\>]+)\>/', '$1', $item);
-                if (!array_key_exists($columnId, $maxLengths)) {
-                    $maxLengths[$columnId] = strlen($item);
-                } elseif (strlen($item) > $maxLengths[$columnId]) {
-                    $maxLengths[$columnId] = strlen($item);
-                }
+
+            foreach ($columns as $columnId) {
+                $maxLengths[$columnId] = max(
+                    Ar::get($maxLengths, $columnId),
+                    strlen(Ar::get($row, $columnId)),
+                    strlen(Ar::get($headers, $columnId))
+                );
             }
+//
+//            foreach ($row as $columnId => $item) {
+//                $item = preg_replace('/\<[^\|]+\|([^\>]+)\>/', '$1', $item);
+//                if (!array_key_exists($columnId, $maxLengths)) {
+//                    $maxLengths[$columnId] = strlen($item);
+//                } elseif (strlen($item) > $maxLengths[$columnId]) {
+//                    $maxLengths[$columnId] = strlen($item);
+//                }
+//            }
         }
 
         if (0 === count($headers)) {
@@ -101,8 +132,8 @@ class TableFormattingHelper
     private static function getRow($row, $maxLengths)
     {
         $response = '|';
-        foreach ($row as $itemId => $item) {
-            $response .= ' ' . str_pad($item, $maxLengths[$itemId], ' ', STR_PAD_RIGHT) . ' |';
+        foreach ($maxLengths as $itemId => $item) {
+            $response .= ' ' . str_pad(Ar::get($row, $itemId), $item, ' ', STR_PAD_RIGHT) . ' |';
         }
         return $response;
     }
@@ -116,8 +147,8 @@ class TableFormattingHelper
     private static function getHeaderRow($row, $maxLengths)
     {
         $response = '|';
-        foreach ($row as $itemId => $item) {
-            $response .= ' ' . str_pad($item, $maxLengths[$itemId], ' ', STR_PAD_BOTH) . ' |';
+        foreach ($maxLengths as $itemId => $item) {
+            $response .= ' ' . str_pad(Ar::get($row, $itemId), $item, ' ', STR_PAD_BOTH) . ' |';
         }
         return $response;
     }
