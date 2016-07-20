@@ -36,6 +36,10 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
      */
     public function delete($key)
     {
+        if ($key instanceof Collectible && in_array($key, $this->items)) {
+            $key = array_search($key, $this->items);
+        }
+
         unset($this->items[$key]);
 
         return $this;
@@ -101,6 +105,27 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         }
 
         return $this;
+    }
+
+    /**
+     * Checks if key/collectible entity/array of them exists in collection
+     * @return bool
+     */
+    public function contains($item)
+    {
+        if (is_array($item)) {
+            $result = true;
+            foreach ($item as $subItem) {
+                $result = $result && $this->contains($subItem);
+            }
+            return $result;
+        }
+
+        if ($item instanceof Collectible) {
+            return in_array($item, $this->items);
+        }
+
+        return array_key_exists($item, $this->items);
     }
 
     // Iterator interface
