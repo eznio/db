@@ -5,7 +5,7 @@ namespace eznio\db\tests;
 use eznio\db\Collection;
 use eznio\db\tests\assets\TestableEntity;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase
+class CollectionTest extends BaseTest
 {
     /** @test */
     public function shouldStoreEntities()

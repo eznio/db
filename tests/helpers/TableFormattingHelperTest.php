@@ -4,8 +4,9 @@ namespace eznio\db\tests\helpers;
 
 
 use eznio\db\helpers\TableFormattingHelper;
+use eznio\db\tests\BaseTest;
 
-class TableFormattingHelperTest extends \PHPUnit_Framework_TestCase
+class TableFormattingHelperTest extends BaseTest
 {
     /**
      * @test

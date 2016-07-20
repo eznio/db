@@ -4,8 +4,9 @@ namespace eznio\db\tests\helpers;
 
 
 use eznio\db\helpers\SqlConditionHelper;
+use eznio\db\tests\BaseTest;
 
-class SqlConditionHelperTest extends \PHPUnit_Framework_TestCase
+class SqlConditionHelperTest extends BaseTest
 {
     /**
      * @test

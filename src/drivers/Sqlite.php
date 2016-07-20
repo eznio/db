@@ -3,6 +3,9 @@
 namespace eznio\db\drivers;
 
 
+use eznio\db\exceptions\RuntimeException;
+use eznio\db\interfaces\Driver;
+
 /**
  * Class Sqlite
  * @package eznio\db\drivers
@@ -26,23 +29,20 @@ class Sqlite implements Driver
      * @param string $sql query to run
      * @param array $args query named arguments
      * @return array
+     * @throws RuntimeException
      */
     public function select($sql, array $args = [])
     {
-        try {
-            $sqliteResult = $this->processRequest($sql, $args);
-            $result = [];
-            while ($row = $sqliteResult->fetchArray(SQLITE3_ASSOC)) {
-                if (array_key_exists('ARRAY_KEY', $row)) {
-                    $key = $row['ARRAY_KEY'];
-                    unset($row['ARRAY_KEY']);
-                    $result[$key] = $row;
-                } else {
-                    $result[] = $row;
-                }
+        $sqliteResult = $this->processRequest($sql, $args);
+        $result = [];
+        while ($row = $sqliteResult->fetchArray(SQLITE3_ASSOC)) {
+            if (array_key_exists('ARRAY_KEY', $row)) {
+                $key = $row['ARRAY_KEY'];
+                unset($row['ARRAY_KEY']);
+                $result[$key] = $row;
+            } else {
+                $result[] = $row;
             }
-        } catch  (\Exception $e) {
-            $result = [];
         }
         return $result;
     }
@@ -52,12 +52,11 @@ class Sqlite implements Driver
      * @param string $sql query to run
      * @param array $args query named arguments
      * @param array $args
+     * @throws RuntimeException
      */
     public function query($sql, array $args = [])
     {
-        try {
-            $this->processRequest($sql, $args);
-        } catch  (\Exception $e) {}
+        $this->processRequest($sql, $args);
     }
 
     /**
@@ -184,13 +183,20 @@ class Sqlite implements Driver
      * @param string $sql query to run
      * @param array $args query arguments
      * @return \SQLite3Result
+     * @throws RuntimeException
      */
     private function processRequest($sql, array $args = [])
     {
-        $statement = $this->sqliteHandler->prepare($sql);
-        foreach ($args as $argId => $arg) {
-            $statement->bindValue($argId, $arg);
+        try {
+            $statement = $this->sqliteHandler->prepare($sql);
+            foreach ($args as $argId => $arg) {
+                $statement->bindValue($argId, $arg);
+            }
+            return $statement->execute();
+        } catch (\Exception $e) {
+            $ex = new RuntimeException($e->getMessage());
+            $ex->setInnerException($e);
+            throw $ex;
         }
-        return $statement->execute();
     }
 }

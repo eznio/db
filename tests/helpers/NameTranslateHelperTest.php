@@ -4,8 +4,9 @@ namespace eznio\db\tests\helpers;
 
 
 use eznio\db\helpers\NameTranslateHelper;
+use eznio\db\tests\BaseTest;
 
-class NameTranslateHelperTest extends \PHPUnit_Framework_TestCase
+class NameTranslateHelperTest extends BaseTest
 {
     /**
      * @test

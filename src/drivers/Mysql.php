@@ -3,6 +3,8 @@
 namespace eznio\db\drivers;
 
 
+use eznio\db\interfaces\Driver;
+
 /**
  * Class Mysql
  * @package eznio\db\drivers\

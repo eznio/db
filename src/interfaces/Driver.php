@@ -1,6 +1,6 @@
 <?php
 
-namespace eznio\db\drivers;
+namespace eznio\db\interfaces;
 
 
 interface Driver
