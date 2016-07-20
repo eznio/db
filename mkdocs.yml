@@ -1,0 +1,6 @@
+site_name: eznio\db library
+pages:
+- Home: index.md
+- Quick start: quickstart.md
+- Reference: reference.md
+theme: readthedocs
