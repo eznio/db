@@ -61,7 +61,7 @@ class TableFormattingHelper
      * Returns max string length per each column
      * @param array $data 2D array with table data
      * @param array $headers array with table column headers
-     * @param array columns column key names
+     * @param array $columns column key names
      * @return array
      */
     private static function getMaxLengths($data, $headers, $columns)
@@ -79,15 +79,6 @@ class TableFormattingHelper
                     strlen(Ar::get($headers, $columnId))
                 );
             }
-//
-//            foreach ($row as $columnId => $item) {
-//                $item = preg_replace('/\<[^\|]+\|([^\>]+)\>/', '$1', $item);
-//                if (!array_key_exists($columnId, $maxLengths)) {
-//                    $maxLengths[$columnId] = strlen($item);
-//                } elseif (strlen($item) > $maxLengths[$columnId]) {
-//                    $maxLengths[$columnId] = strlen($item);
-//                }
-//            }
         }
 
         if (0 === count($headers)) {
