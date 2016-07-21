@@ -323,42 +323,49 @@ TABLE
         $collection = new Collection();
         $collection->collect([$entity1, $entity2, $entity3]);
 
+        /** @var Collection $result */
         $result = $collection->slice(1,2);
         $this->assertEquals(
             [$entity2, $entity3],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(0,0);
         $this->assertEquals(
             [],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(0,3);
         $this->assertEquals(
             [$entity1, $entity2, $entity3],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(0,18);
         $this->assertEquals(
             [$entity1, $entity2, $entity3],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(11,18);
         $this->assertEquals(
             [],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(-11, 18);
         $this->assertEquals(
             [$entity1, $entity2, $entity3],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->slice(-11, -18);
         $this->assertEquals(
             [],
@@ -377,41 +384,159 @@ TABLE
         $collection->collect([$entity3, $entity2, $entity1]);
         $collection->collect([$entity2, $entity2, $entity2]);
 
+        /** @var Collection $result */
         $result = $collection->page(0, 3);
         $this->assertEquals(
             [$entity1, $entity2, $entity3],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->page(2, 3);
         $this->assertEquals(
             [$entity2, $entity2, $entity2],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->page(1, 1);
         $this->assertEquals(
             [$entity2],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->page(18, 3);
         $this->assertEquals(
             [],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->page(-1, 3);
         $this->assertEquals(
             [],
             $result->getAll()
         );
 
+        /** @var Collection $result */
         $result = $collection->page(-1, -1);
         $this->assertEquals(
             [],
             $result->getAll()
         );
+    }
+
+    /** @test */
+    public function shouldSort()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+
+        $collection->sort(function($item1, $item2) {
+            $result = $item1->a > $item2->a ? -1 : ($item1->a == $item2->a ? 0 : 1);
+            return $result;
+        });
+
+        $this->assertEquals(
+            [$entity3, $entity2, $entity1],
+            $collection->getAll()
+        );
+    }
+
+    /** @test */
+    public function shouldProcessEachElement()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+        $processorMock = \Mockery::spy();
+
+        $collection->each([$processorMock, 'process']);
+
+        $processorMock->shouldHaveReceived('process')
+            ->times(3)
+            ->with(\Mockery::anyOf($entity1, $entity2, $entity3));
+    }
+
+    /** @test */
+    public function shouldFilter()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+
+        $newCollection = $collection->filter(function($item) {
+            return $item->a === 2;
+        });
+
+        $this->assertEquals(
+            [$entity2],
+            $newCollection->getAll()
+        );
+    }
+
+    /** @test */
+    public function shouldReject()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+
+        $newCollection = $collection->reject(function($item) {
+            return $item->a === 2;
+        });
+
+        $this->assertEquals(
+            [$entity1, $entity3],
+            $newCollection->getAll()
+        );
+    }
+
+    /** @test */
+    public function shouldMap()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+
+        $newCollection = $collection->map(function($item) {
+            $entity = new TestableEntity();
+            $entity->a = $item->a * 2;
+            return $entity;
+        });
+
+        $this->assertEquals(
+            [['a' => 2], ['a' => 4], ['a' => 6]],
+            $newCollection->toArray()
+        );
+    }
+
+    /** @test */
+    public function shouldReduce()
+    {
+        $entity1 = new TestableEntity(['a' => 1]);
+        $entity2 = new TestableEntity(['a' => 2]);
+        $entity3 = new TestableEntity(['a' => 3]);
+        $collection = new Collection();
+        $collection->collect([$entity1, $entity2, $entity3]);
+
+        $result = $collection->reduce(function($item, $value) {
+            return $value + $item->a;
+        }, 0);
+
+        $this->assertEquals(6, $result);
     }
 
     private function getSampleCollection()

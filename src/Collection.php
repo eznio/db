@@ -75,20 +75,24 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     /**
      * Adds multiple items to collection, in form of either items array or another collection
-     * @param array|Collectible $data array or collection of Collectible items
+     * @param array|Collectible $items array or collection of Collectible items
+     * @return Collection
      */
-    public function collect($data)
+    public function collect($items)
     {
-        if ($data instanceof Collection) {
-            $data = $data->getAll();
-        } elseif (!is_array($data)) {
-            return;
+        $data = $items;
+        if ($items instanceof Collection) {
+            $data = $items->getAll();
+        } elseif (!is_array($items)) {
+            return $this;
         }
 
         $collection = $this;
         Ar::each($data, function($item) use ($collection) {
             $collection->add($item);
         });
+
+        return $this;
     }
 
     /**
@@ -280,6 +284,75 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         shuffle($this->items);
 
         return $this;
+    }
+
+    // eznio\ar\Ar-based functions
+    /**
+     * Sorts collection based on callback return:
+     *  - <0 means "first is less than second"
+     *  - 0 means "first is equal to second"
+     *  - >0 means "first is more than second"
+     * @param callable $callback
+     * @return Collection
+     */
+    public function sort(callable $callback)
+    {
+        usort($this->items, $callback);
+        return $this;
+    }
+
+    /**
+     * Runs $callback on each collection item
+     * Does not alter collection. Does not store any changes.
+     * @param callable $callback routine to proceed items
+     * @return Collection
+     */
+    public function each(callable $callback)
+    {
+        Ar::each($this->items, $callback);
+        return $this;
+    }
+
+    /**
+     * Creates new collection with filtered from current one items
+     * @param callable $callback decides whether to store item (true), or drop it (false)
+     * @return Collection
+     */
+    public function filter(callable $callback)
+    {
+        return (new Collection())->collect(Ar::filter($this->items, $callback));
+    }
+
+    /**
+     * Creates new collection with filtered from current one items
+     * @param callable $callback opposite to filter(), decides whether to store item (false), or drop it (true)
+     * @return Collection
+     */
+    public function reject(callable $callback)
+    {
+        $this->items = Ar::reject($this->items, $callback);
+        return $this;
+    }
+
+    /**
+     * Creates new collection with items mapped from old ones
+     * @param callable $callback function to transform item to a new Collectible (should return Collectible!)
+     * @return Collection
+     */
+    public function map(callable $callback)
+    {
+        return (new Collection())->collect(Ar::map($this->items, $callback));
+    }
+
+    /**
+     * Reduces collection values to some scalar value
+     * @param callable $callback function to reduce: function $callback($item, $currentScalarValue)
+     * @param null $initialValue initial scalar value
+     * @return mixed
+     */
+    public function reduce(callable $callback, $initialValue = null)
+    {
+        return Ar::reduce($this->items, $callback, $initialValue);
     }
 
     // Iterator implementation
