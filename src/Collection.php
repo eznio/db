@@ -41,6 +41,27 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
+     * Adds entity to collection
+     * @param Collectible $entity
+     * @return Collection
+     */
+    public function push(Collectible $entity)
+    {
+        $this->add($entity);
+
+        return $this;
+    }
+
+    public function pop()
+    {
+        $item = $this->last();
+        if (null !== $item) {
+            $this->delete($item);
+        }
+        return $item;
+    }
+
+    /**
      * Adds entity to top of collection
      * @param Collectible $entity
      * @return Collection
@@ -50,6 +71,24 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         $this->items = array_merge([$entity], $this->items);
 
         return $this;
+    }
+
+    /**
+     * Adds multiple items to collection, in form of either items array or another collection
+     * @param array|Collectible $data array or collection of Collectible items
+     */
+    public function collect($data)
+    {
+        if ($data instanceof Collection) {
+            $data = $data->getAll();
+        } elseif (!is_array($data)) {
+            return;
+        }
+
+        $collection = $this;
+        Ar::each($data, function($item) use ($collection) {
+            $collection->add($item);
+        });
     }
 
     /**
@@ -81,6 +120,25 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
+     * Returns new collection with $limit entities, skipping $offset from start
+     * @param $limit
+     * @param $offset
+     * @return Collection
+     */
+    public function slice($offset, $limit)
+    {
+        $counter = 0;
+        $result = new Collection();
+        foreach ($this->getAll() as $item) {
+            if ($counter >= $offset && $counter < $offset + $limit) {
+                $result->add($item);
+            }
+            $counter++;
+        }
+        return $result;
+    }
+
+    /**
      * Returns collection's internal ID
      * @return string
      */
@@ -96,6 +154,16 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     public function getAll()
     {
         return $this->items;
+    }
+
+    /**
+     * Simple pagination
+     * @param $pageNumber
+     * @param $itemsPerPage
+     * @return Collection
+     */
+    public function page($pageNumber, $itemsPerPage) {
+        return $this->slice($pageNumber * $itemsPerPage, $itemsPerPage);
     }
 
     /**
@@ -174,7 +242,7 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
-     * Returns first colection item
+     * Returns first collection item
      * @return Collectible
      */
     public function first()
@@ -183,16 +251,38 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
     }
 
     /**
-     * Returns last colection item
+     * Returns last collection item
      * @return Collectible
      */
     public function last()
     {
-        return array_slice($this->items, -1, 1)[0];
+
+        return count($this->items) > 0 ? array_slice($this->items, -1, 1)[0] : null;
     }
 
-    // Iterator interface
+    /**
+     * Reverses collection items order
+     * @return Collection
+     */
+    public function reverse()
+    {
+        $this->items = array_reverse($this->items);
 
+        return $this;
+    }
+
+    /**
+     * Shuffles collection items order
+     * @return Collection
+     */
+    public function shuffle()
+    {
+        shuffle($this->items);
+
+        return $this;
+    }
+
+    // Iterator implementation
     public function current()
     {
         return current($this->items);
@@ -220,8 +310,7 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
         reset($this->items);
     }
 
-    // ArrayAccess interface
-
+    // ArrayAccess implementation
     public function offsetExists($offset)
     {
         return isset($this->items[$offset]);
@@ -234,7 +323,7 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     public function offsetSet($offset, $value)
     {
-        if ($value instanceof Entity) {
+        if ($value instanceof Collectible) {
             $this->items[] = $value;
         }
     }
