@@ -4,7 +4,7 @@ namespace eznio\db;
 
 
 use eznio\ar\Ar;
-use eznio\db\drivers\Driver;
+use eznio\db\interfaces\Driver;
 
 /**
  * Class EntityManager

@@ -4,8 +4,9 @@ namespace eznio\db;
 
 
 use eznio\db\interfaces\Collectible;
-use eznio\db\helpers\TableFormattingHelper;
 use eznio\ar\Ar;
+use eznio\tabler\Tabler;
+use eznio\tabler\renderers\MysqlStyleRenderer;
 
 /**
  * Entity Collection abstraction
@@ -195,18 +196,22 @@ class Collection implements \Iterator, \ArrayAccess, Collectible
 
     /**
      * Returns ASCII table wih all collection data.
-     * Headers are taken from array keys.
+     * Headers are taken from first parameter or array keys.
+     * @param $headers array
      * @return string
      */
-    public function toTable()
+    public function toTable($headers = [])
     {
         $data = $this->toArray();
         $firstRow = current($data);
-        if (false !== $firstRow && count($firstRow) > 0) {
+        if (false !== $firstRow && count($firstRow) > 0 && 0 === count($headers)) {
             $headers = array_combine(array_keys($firstRow), array_keys($firstRow));
-            return TableFormattingHelper::format($data, $headers);
         }
-        return TableFormattingHelper::format($data);
+        return (new Tabler())
+            ->setHeaders($headers)
+            ->setData($data)
+            ->setRenderer(new MysqlStyleRenderer())
+            ->render();
     }
 
     /**

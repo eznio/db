@@ -5,9 +5,10 @@ namespace eznio\db;
 
 use eznio\ar\Ar;
 use eznio\db\helpers\NameTranslateHelper;
-use eznio\db\drivers\Driver;
-use eznio\db\helpers\TableFormattingHelper;
+use eznio\db\interfaces\Driver;
 use eznio\db\interfaces\Collectible;
+use eznio\tabler\renderers\MysqlStyleRenderer;
+use eznio\tabler\Tabler;
 
 /**
  * Class Entity
@@ -175,7 +176,11 @@ class Entity implements Collectible
     public function toTable()
     {
         $data = $this->toArray();
-        return TableFormattingHelper::format([array_values($data)], array_keys($data));
+        return (new Tabler())
+            ->setHeaders(array_keys($data))
+            ->setData([array_values($data)])
+            ->setRenderer(new MysqlStyleRenderer())
+            ->render();
     }
 
     /**

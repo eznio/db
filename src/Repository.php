@@ -5,7 +5,7 @@ namespace eznio\db;
 
 use eznio\db\helpers\NameTranslateHelper;
 use eznio\db\helpers\SqlConditionHelper;
-use eznio\db\drivers\Driver;
+use eznio\db\interfaces\Driver;
 
 /**
  * Class Repository
