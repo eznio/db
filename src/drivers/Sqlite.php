@@ -186,7 +186,7 @@ class Sqlite implements Driver
     public function exists($table)
     {
         $sql = sprintf(
-            'SELECT ' . "name FROM sqlite_master WHERE type='%s' AND name='table_name'",
+            'SELECT ' . "name FROM sqlite_master WHERE type='table' AND name='%s'",
             $table
         );
         return count($this->getColumn($sql)) > 0;
