@@ -14,4 +14,5 @@ interface Driver
     public function insert($table, $data);
     public function update($table, $id, $data);
     public function delete($table, $id);
+    public function exists($table);
 }

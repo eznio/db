@@ -197,6 +197,20 @@ class Mysql implements Driver
     }
 
     /**
+     * Checks if given table exists
+     * @param string $table
+     * @return bool
+     */
+    public function exists($table)
+    {
+        $sql = sprintf(
+            'SHOW TABLES LIKE %s',
+            $table
+        );
+        return count($this->getColumn($sql)) > 0;
+    }
+
+    /**
      * Processes PDO DB request and returns resulting PDOStatement
      * @param string $sql
      * @param array $placeholders

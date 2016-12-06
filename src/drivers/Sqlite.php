@@ -179,6 +179,20 @@ class Sqlite implements Driver
     }
 
     /**
+     * Checks if given table exists
+     * @param string $table
+     * @return bool
+     */
+    public function exists($table)
+    {
+        $sql = sprintf(
+            'SELECT ' . "name FROM sqlite_master WHERE type='%s' AND name='table_name'",
+            $table
+        );
+        return count($this->getColumn($sql)) > 0;
+    }
+
+    /**
      * Runs quesy - creates prepared statement, substitutes named placeholders and executes query
      * @param string $sql query to run
      * @param array $args query arguments
