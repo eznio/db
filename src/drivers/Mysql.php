@@ -211,6 +211,15 @@ class Mysql implements Driver
     }
 
     /**
+     * Deletes all data from table
+     * @param $table
+     */
+    public function truncate($table)
+    {
+        $this->query(sprintf('DELETE ' . 'FROM %s', $table));
+    }
+
+    /**
      * Processes PDO DB request and returns resulting PDOStatement
      * @param string $sql
      * @param array $placeholders

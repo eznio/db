@@ -193,6 +193,15 @@ class Sqlite implements Driver
     }
 
     /**
+     * Deletes all data from table
+     * @param $table
+     */
+    public function truncate($table)
+    {
+        $this->query(sprintf('DELETE ' . 'FROM %s', $table));
+    }
+
+    /**
      * Runs quesy - creates prepared statement, substitutes named placeholders and executes query
      * @param string $sql query to run
      * @param array $args query arguments
