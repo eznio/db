@@ -87,4 +87,13 @@ class EntityManager
     {
         return $this->getRepository($name)->createEntity($data);
     }
+
+    /**
+     * Low-level access
+     * @return Driver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
 }
