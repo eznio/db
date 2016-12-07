@@ -22,6 +22,9 @@ class EntityManager
     /** @var string */
     protected $repositoriesNamespace = '';
 
+    /** @var string */
+    protected $entitiesNamespace = '';
+
     /**
      * EntityManager constructor.
      * @param Driver $driver
@@ -34,9 +37,17 @@ class EntityManager
     /**
      * @param $namespace
      */
-    public function setNamespace($namespace)
+    public function setRepositoriesNamespace($namespace)
     {
         $this->repositoriesNamespace = $namespace;
+    }
+
+    /**
+     * @param $namespace
+     */
+    public function setEntitiesNamespace($namespace)
+    {
+        $this->entitiesNamespace = $namespace;
     }
 
     /**
@@ -56,6 +67,11 @@ class EntityManager
                 $this->repositories[$entityName] = new $repositoryClassName($this->driver, $entityName);
             } else {
                 $this->repositories[$entityName] = new Repository($this->driver, $entityName);
+            }
+
+            if (strlen($this->entitiesNamespace) > 0) {
+                /** @var Repository repositories[$entityName] */
+                $this->repositories[$entityName]->setEntitiesNamespace($this->entitiesNamespace);
             }
         }
         return Ar::get($this->repositories,$entityName);
