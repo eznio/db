@@ -3,6 +3,7 @@
 namespace eznio\db\drivers;
 
 
+use eznio\ar\Ar;
 use eznio\db\exceptions\RuntimeException;
 use eznio\db\interfaces\Driver;
 
@@ -129,6 +130,10 @@ class Sqlite implements Driver
      */
     public function insert($table, $data)
     {
+        $data = Ar::map($data, function($item, $key) {
+            return [$key => \SQLite3::escapeString($item)];
+        });
+
         $sql = sprintf(
             'INSERT ' . 'INTO %s (%s) VALUES (%s)',
             $table,
@@ -151,7 +156,7 @@ class Sqlite implements Driver
             $item = sprintf(
                 '%s = %s',
                 $key,
-                null !== $item ? "'" . $item . "'" : 'NULL'
+                null !== $item ? "'" . \Sqlite3::escapeString($item) . "'" : 'NULL'
             );
         });
         $sql = sprintf(
