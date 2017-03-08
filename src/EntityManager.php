@@ -4,6 +4,7 @@ namespace eznio\db;
 
 
 use eznio\ar\Ar;
+use eznio\db\helpers\NameTranslateHelper;
 use eznio\db\interfaces\Driver;
 
 /**
@@ -60,7 +61,7 @@ class EntityManager
         if (null === Ar::get($this->repositories, $entityName)) {
             $repositoryClassName =
                 $this->repositoriesNamespace
-                . ucfirst($entityName)
+                . NameTranslateHelper::fieldToFunction($entityName)
                 . 'Repository';
 
             if (class_exists($repositoryClassName)) {
